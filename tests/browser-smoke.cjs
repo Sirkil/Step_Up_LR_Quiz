@@ -1,6 +1,8 @@
 // Optional visual/game-flow check. Set PLAYWRIGHT_MODULE to a Playwright install.
 const assert = require('node:assert/strict');
 const { spawn } = require('node:child_process');
+const fs = require('node:fs');
+const http = require('node:http');
 const net = require('node:net');
 const os = require('node:os');
 const path = require('node:path');
@@ -19,6 +21,7 @@ async function main() {
     cwd: path.resolve(__dirname, '..'), env: { ...process.env, PORT: String(port) }, stdio: ['ignore', 'pipe', 'pipe']
   });
   let browser;
+  let staticServer;
   try {
     await new Promise((resolve, reject) => {
       server.stdout.once('data', resolve);
@@ -74,13 +77,37 @@ async function main() {
     modelPage.on('pageerror', (error) => errors.push(error.message));
     await modelPage.goto(`http://127.0.0.1:${port}/?demo=1&models=1`);
     await modelPage.locator('#startButton').waitFor({ state: 'visible', timeout: 30000 });
+
+    // GitHub Pages serves a project below /REPOSITORY/, with no Node server.
+    const staticRoot = path.resolve(__dirname, '..');
+    staticServer = http.createServer((request, response) => {
+      const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
+      const prefix = '/Step_Up_LR_Quiz/';
+      if (!pathname.startsWith(prefix)) return response.writeHead(404).end();
+      const relative = pathname.slice(prefix.length) || 'index.html';
+      const filename = path.resolve(staticRoot, relative);
+      if (!filename.startsWith(staticRoot + path.sep)) return response.writeHead(404).end();
+      const extension = path.extname(filename);
+      const type = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.wasm': 'application/wasm', '.png': 'image/png' }[extension] || 'application/octet-stream';
+      response.setHeader('Content-Type', type);
+      fs.createReadStream(filename).on('error', () => response.writeHead(404).end()).pipe(response);
+    });
+    await new Promise((resolve) => staticServer.listen(0, '127.0.0.1', resolve));
+    const staticPort = staticServer.address().port;
+    const pagesPage = await browser.newPage();
+    pagesPage.on('pageerror', (error) => errors.push(error.message));
+    await pagesPage.goto(`http://127.0.0.1:${staticPort}/Step_Up_LR_Quiz/?demo=1&models=1`);
+    await pagesPage.locator('#startButton').waitFor({ state: 'visible', timeout: 30000 });
+    await pagesPage.locator('#startButton').click();
+    assert.equal(await pagesPage.locator('#progressText').textContent(), 'Question 1 of 25');
     assert.deepEqual(errors, []);
-    console.log('Browser flow passed: 25 questions, final score, restart, portrait and landscape widths, local models.');
+    console.log('Browser flow passed: 25 questions, final score, restart, both orientations, models, GitHub Pages subpath.');
     console.log(path.join(os.tmpdir(), 'step-quiz-start-portrait.png'));
     console.log(path.join(os.tmpdir(), 'step-quiz-question-landscape.png'));
     console.log(path.join(os.tmpdir(), 'step-quiz-complete-landscape.png'));
   } finally {
     if (browser) await browser.close();
+    if (staticServer) await new Promise((resolve) => staticServer.close(resolve));
     server.kill();
   }
 }

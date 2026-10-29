@@ -11,7 +11,7 @@ html, body { min-height: 100%; margin: 0; }
 body {
   min-height: 100dvh;
   color: var(--white);
-  background: #130821 url('/assets/Background_V2.png') center / cover no-repeat fixed;
+  background: #130821 url('./assets/Background_V2.png') center / cover no-repeat fixed;
   overflow-x: hidden;
 }
 body::before {

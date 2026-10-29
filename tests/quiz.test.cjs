@@ -48,11 +48,15 @@ test('server delivers the quiz, questions, and local artwork', async () => {
     });
     for (const [url, type] of [
       ['/', 'text/html'],
+      ['/index.html', 'text/html'],
       ['/app.js', 'text/javascript'],
       ['/questions.mjs', 'text/javascript'],
       ['/style.css', 'text/css'],
       ['/assets/Logo_White.png', 'image/png'],
-      ['/assets/Background_V2.png', 'image/png']
+      ['/assets/Background_V2.png', 'image/png'],
+      ['/vendor/mediapipe/vision_bundle.mjs', 'text/javascript'],
+      ['/vendor/mediapipe/wasm/vision_wasm_internal.wasm', 'application/wasm'],
+      ['/models/gesture_recognizer.task', 'application/octet-stream']
     ]) {
       const response = await fetch(`http://127.0.0.1:${port}${url}`);
       assert.equal(response.status, 200, url);

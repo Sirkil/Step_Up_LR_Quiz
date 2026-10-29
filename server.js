@@ -6,12 +6,13 @@ const { spawn } = require('node:child_process');
 const quizRoot = __dirname;
 const assetsRoot = path.join(quizRoot, 'assets');
 const modelRoot = path.join(quizRoot, 'models');
-const visionRoot = path.join(quizRoot, 'node_modules', '@mediapipe', 'tasks-vision');
+const visionRoot = path.join(quizRoot, 'vendor', 'mediapipe');
 const port = Number(process.env.PORT) || 8765;
 const host = '127.0.0.1';
 
 const directFiles = new Map([
-  ['/', path.join(quizRoot, 'Step_Quiz.html')],
+  ['/', path.join(quizRoot, 'index.html')],
+  ['/index.html', path.join(quizRoot, 'index.html')],
   ['/Step_Quiz.html', path.join(quizRoot, 'Step_Quiz.html')],
   ['/style.css', path.join(quizRoot, 'style.css')],
   ['/app.js', path.join(quizRoot, 'app.js')],
@@ -39,7 +40,7 @@ function requestedFile(urlPath) {
   return directFiles.get(urlPath)
     || scopedFile(urlPath, '/assets/', assetsRoot)
     || scopedFile(urlPath, '/models/', modelRoot)
-    || scopedFile(urlPath, '/node_modules/@mediapipe/tasks-vision/', visionRoot);
+    || scopedFile(urlPath, '/vendor/mediapipe/', visionRoot);
 }
 
 const server = http.createServer((request, response) => {

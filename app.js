@@ -2,9 +2,9 @@ import {
   FilesetResolver,
   GestureRecognizer,
   PoseLandmarker
-} from '/node_modules/@mediapipe/tasks-vision/vision_bundle.mjs';
+} from './vendor/mediapipe/vision_bundle.mjs';
 
-import { questions, maxScore, pointsForAnswer } from '/questions.mjs';
+import { questions, maxScore, pointsForAnswer } from './questions.mjs';
 
 const timing = {
   questionIntroMs: 2200,
@@ -343,17 +343,17 @@ function showReady() {
 
 async function loadVisionModels() {
   if (poseLandmarker && gestureRecognizer) return;
-  const vision = await FilesetResolver.forVisionTasks('/node_modules/@mediapipe/tasks-vision/wasm');
+  const vision = await FilesetResolver.forVisionTasks(new URL('./vendor/mediapipe/wasm', import.meta.url).href);
   if (!poseLandmarker) {
     poseLandmarker = await PoseLandmarker.createFromOptions(vision, {
-      baseOptions: { modelAssetPath: '/models/pose_landmarker_lite.task', delegate: 'CPU' },
+      baseOptions: { modelAssetPath: new URL('./models/pose_landmarker_lite.task', import.meta.url).href, delegate: 'CPU' },
       runningMode: 'VIDEO', numPoses: 2,
       minPoseDetectionConfidence: .55, minPosePresenceConfidence: .55, minTrackingConfidence: .55
     });
   }
   if (!gestureRecognizer) {
     gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
-      baseOptions: { modelAssetPath: '/models/gesture_recognizer.task', delegate: 'CPU' },
+      baseOptions: { modelAssetPath: new URL('./models/gesture_recognizer.task', import.meta.url).href, delegate: 'CPU' },
       runningMode: 'VIDEO', numHands: 1
     });
   }
