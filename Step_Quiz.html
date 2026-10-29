@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#170925">
+  <title>Step Up | Left or Right Quiz</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <img class="brand" src="/assets/Logo_White.png" alt="Step Up for Pompe">
+      <div class="topbar-right">
+        <span class="event-tag">Move to choose</span>
+        <button id="settingsButton" class="settings-button" type="button" aria-label="Camera settings" aria-expanded="false">⚙</button>
+      </div>
+    </header>
+
+    <main class="stage" aria-live="polite">
+      <section id="quizScreen" hidden>
+        <div class="meta"><span id="progressText"></span><span>Score <strong id="scoreText">0</strong></span></div>
+        <div id="questionPanel" class="question-panel">
+          <p class="eyebrow">Left or right?</p>
+          <h1 id="questionText" class="question"></h1>
+          <p id="questionPrompt" class="prompt">Get ready to choose</p>
+        </div>
+        <div id="choices" class="choices" aria-hidden="true">
+          <div id="trueChoice" class="choice true">
+            <span class="choice-side">Left side</span><strong class="choice-label">YES</strong>
+            <span class="choice-hint">Stand here to choose Yes</span>
+            <div class="hold-track"><div id="trueHold" class="hold-fill"></div></div>
+          </div>
+          <div id="falseChoice" class="choice false">
+            <span class="choice-side">Right side</span><strong class="choice-label">NO</strong>
+            <span class="choice-hint">Stand here to choose No</span>
+            <div class="hold-track"><div id="falseHold" class="hold-fill"></div></div>
+          </div>
+        </div>
+        <div class="tracking">
+          <p id="trackingMessage" class="tracking-message">Looking for a player...</p>
+          <div class="position-bar" aria-hidden="true"><span id="positionMarker" class="position-marker"></span></div>
+        </div>
+      </section>
+
+      <section id="startupScreen" class="center-screen">
+        <p class="eyebrow">Step Up quiz</p>
+        <h1 id="startupTitle">Setting up the camera</h1>
+        <p id="startupMessage">Please allow camera access when your browser asks.</p>
+        <button id="startButton" class="primary-button" type="button" hidden>Start Game</button>
+        <div id="startupGestureIcon" class="gesture-icon" aria-hidden="true" hidden>👍</div>
+        <div class="gesture-progress" aria-hidden="true" hidden><div id="startupGestureProgressFill" class="gesture-progress-fill"></div></div>
+        <p id="startupStatus" class="gesture-status" hidden></p>
+        <button id="retryButton" class="primary-button" type="button" hidden>Try camera again</button>
+      </section>
+
+      <section id="completionScreen" class="center-screen" hidden>
+        <p class="eyebrow">Quiz complete</p>
+        <h1>Well played!</h1>
+        <div id="finalScore" class="completion-score"></div>
+        <button id="restartButton" class="primary-button" type="button">Restart Game</button>
+        <div class="gesture-icon" aria-hidden="true">👍</div>
+        <div class="gesture-progress" aria-hidden="true"><div id="gestureProgressFill" class="gesture-progress-fill"></div></div>
+        <p id="completionStatus">Show your thumb to the camera and hold it.</p>
+      </section>
+    </main>
+
+  </div>
+
+  <div id="feedback" class="feedback" aria-live="assertive" hidden>
+    <div id="confetti" class="confetti" aria-hidden="true"></div>
+    <div class="feedback-content">
+      <div id="feedbackSymbol" class="feedback-symbol"></div>
+      <h2 id="feedbackTitle" class="feedback-title"></h2>
+      <p id="feedbackSubtitle" class="feedback-subtitle"></p>
+    </div>
+  </div>
+
+  <aside id="settingsPanel" class="settings-panel" hidden>
+    <h2>Camera setup</h2>
+    <video id="camera" class="camera-preview mirrored" autoplay muted playsinline></video>
+    <label class="setting-row"><input id="mirrorToggle" type="checkbox" checked> Mirror camera sides</label>
+    <p>Stand on the screen's left. The position marker should move left too. If it moves right, change this setting.</p>
+    <p>Only one player should stand in view. Press M to flip sides. Operator test keys: Left, Right, R.</p>
+  </aside>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
